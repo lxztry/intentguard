@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>架构 — IntentGuard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0e27; color: #e2e8f0; min-height: 100vh; }
+    .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: 0; }
+    .container { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 0 24px; }
+    header { padding: 28px 0; display: flex; justify-content: space-between; align-items: center; }
+    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+    .logo-icon { width: 42px; height: 42px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 4px 20px rgba(99,102,241,0.4); }
+    .logo-text { font-size: 22px; font-weight: 700; background: linear-gradient(90deg, #a5b4fc, #c4b5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .logo-sub { font-size: 11px; color: #64748b; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+    nav { display: flex; gap: 8px; }
+    nav a { padding: 8px 16px; color: #94a3b8; text-decoration: none; border-radius: 8px; font-size: 14px; transition: all 0.2s; }
+    nav a:hover { color: #e2e8f0; background: rgba(99,102,241,0.15); }
+    nav a.active { color: #a5b4fc; background: rgba(99,102,241,0.2); }
+    .page-title { padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,0.07); margin-bottom: 40px; }
+    .page-title h1 { font-size: 36px; font-weight: 800; margin-bottom: 8px; }
+    .page-title p { color: #64748b; font-size: 16px; }
+    .content { padding-bottom: 80px; }
+    h2 { font-size: 22px; font-weight: 700; margin: 36px 0 16px; color: #a5b4fc; }
+    h3 { font-size: 16px; font-weight: 600; margin: 24px 0 12px; color: #e2e8f0; }
+    p { color: #94a3b8; line-height: 1.8; margin-bottom: 12px; font-size: 15px; }
+    pre { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 20px; margin: 16px 0; overflow-x: auto; font-family: 'Fira Code', monospace; font-size: 13px; line-height: 1.7; }
+    code { font-family: 'Fira Code', monospace; font-size: 13px; }
+    .inline-code { background: rgba(99,102,241,0.15); padding: 2px 8px; border-radius: 4px; color: #a5b4fc; }
+    ul { list-style: none; margin: 12px 0; }
+    ul li { padding: 6px 0; color: #94a3b8; font-size: 15px; padding-left: 20px; position: relative; }
+    ul li::before { content: '›'; position: absolute; left: 0; color: #6366f1; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    th { text-align: left; padding: 10px 16px; background: rgba(99,102,241,0.1); color: #a5b4fc; font-size: 13px; border-bottom: 1px solid rgba(99,102,241,0.2); }
+    td { padding: 10px 16px; color: #94a3b8; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    tr:hover td { background: rgba(99,102,241,0.05); }
+    .flow { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 24px; margin: 20px 0; }
+    .flow-step { display: flex; align-items: center; gap: 16px; padding: 10px 0; }
+    .flow-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .flow-text { font-size: 14px; color: #94a3b8; }
+    .flow-arrow { text-align: center; color: #475569; font-size: 20px; padding: 4px 0; }
+    footer { text-align: center; padding: 32px 0; border-top: 1px solid rgba(255,255,255,0.05); color: #475569; font-size: 13px; }
+    footer a { color: #6366f1; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="container">
+    <header>
+      <a href="index.html" class="logo">
+        <div class="logo-icon">🛡️</div>
+        <div><div class="logo-text">IntentGuard</div><div class="logo-sub">代码验证工具</div></div>
+      </a>
+      <nav>
+        <a href="index.html">首页</a>
+        <a href="getting-started.html">快速开始</a>
+        <a href="architecture.html" class="active">架构</a>
+        <a href="cli.html">CLI</a>
+        <a href="https://github.com/lxztry/intentguard" target="_blank">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="page-title">
+      <h1>架构设计</h1>
+      <p>IntentGuard 核心组件与验证流程</p>
+    </div>
+
+    <div class="content">
+      <h2>数据流</h2>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-icon">📝</div>
+          <div class="flow-text"><strong>需求解析器</strong> — 将自然语言需求转换为 Constraint 列表</div>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">
+          <div class="flow-icon">🔧</div>
+          <div class="flow-text"><strong>代码分析器</strong> — 解析代码为 AST / 正则匹配，提取函数/调用/条件</div>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">
+          <div class="flow-icon">⚙️</div>
+          <div class="flow-text"><strong>约束验证引擎</strong> — 多层级验证（Static / Semantic / Deep）</div>
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">
+          <div class="flow-icon">📊</div>
+          <div class="flow-text"><strong>报告生成器</strong> — Text / JSON / Markdown 格式输出</div>
+        </div>
+      </div>
+
+      <h2>项目结构</h2>
+      <pre><code>intentguard/
+├── src/
+│   ├── core/
+│   │   ├── constraint.py     # 约束数据模型
+│   │   ├── engine.py         # 多层级验证引擎
+│   │   └── report.py         # 报告生成器
+│   ├── parser/
+│   │   └── pattern_parser.py # 自然语言 → 约束
+│   ├── analyzers/
+│   │   ├── python_analyzer.py   # Python AST 分析
+│   │   ├── javascript_analyzer.py # JS/TS 正则解析
+│   │   └── go_analyzer.py       # Go 正则解析
+│   ├── llm/
+│   │   ├── factory.py        # LLM 工厂（多提供商）
+│   │   └── semantic.py       # LLM 语义验证
+│   └── cli/
+│       └── main.py           # CLI 入口
+├── tests/                      # 测试套件
+├── vscode-extension/           # VSCode 插件
+└── docs/                       # 文档站</code></pre>
+
+      <h2>核心组件</h2>
+      <table>
+        <tr><th>组件</th><th>职责</th></tr>
+        <tr><td><code class="inline-code">RequirementParser</code></td><td>解析自然语言需求为结构化 Constraint 对象</td></tr>
+        <tr><td><code class="inline-code">PythonAnalyzer</code></td><td>Python AST 解析，提取函数/调用/条件</td></tr>
+        <tr><td><code class="inline-code">JavaScriptAnalyzer</code></td><td>JS/TS 正则解析（函数定义/调用/关键字）</td></tr>
+        <tr><td><code class="inline-code">GoAnalyzer</code></td><td>Go 正则解析（函数/导入/错误处理）</td></tr>
+        <tr><td><code class="inline-code">LLMFactory</code></td><td>统一接口：SiliconFlow / DeepSeek / OpenAI / Ollama</td></tr>
+        <tr><td><code class="inline-code">SemanticVerifier</code></td><td>LLM 深层语义验证</td></tr>
+        <tr><td><code class="inline-code">EnhancedConstraintEngine</code></td><td>三级验证：static / semantic / deep</td></tr>
+        <tr><td><code class="inline-code">ReportGenerator</code></td><td>Text / JSON / Markdown 多格式报告</td></tr>
+      </table>
+
+      <h2>约束类型</h2>
+      <table>
+        <tr><th>类型</th><th>说明</th><th>示例</th></tr>
+        <tr><td><code class="inline-code">MUST</code></td><td>必须实现</td><td>"必须发送短信通知"</td></tr>
+        <tr><td><code class="inline-code">MUST_NOT</code></td><td>禁止出现</td><td>"禁止直接操作数据库"</td></tr>
+        <tr><td><code class="inline-code">CONDITIONAL</code></td><td>条件触发</td><td>"当订单失败时必须重试3次"</td></tr>
+        <tr><td><code class="inline-code">EXISTS</code></td><td>必须存在</td><td>"必须有权限校验"</td></tr>
+        <tr><td><code class="inline-code">LTE</code></td><td>上限</td><td>"响应时间不超过200ms"</td></tr>
+        <tr><td><code class="inline-code">GTE</code></td><td>下限</td><td>"至少重试3次"</td></tr>
+      </table>
+
+      <h2>验证级别</h2>
+      <table>
+        <tr><th>级别</th><th>方式</th><th>速度</th><th>精度</th><th>LLM</th></tr>
+        <tr><td><code class="inline-code">static</code></td><td>静态模式匹配</td><td>⚡⚡⚡⚡⚡</td><td>中</td><td>否</td></tr>
+        <tr><td><code class="inline-code">semantic</code></td><td>静态 + LLM 语义</td><td>⚡⚡⚡</td><td>高</td><td>是</td></tr>
+        <tr><td><code class="inline-code">deep</code></td><td>LLM 深度分析</td><td>⚡</td><td>最高</td><td>是</td></tr>
+      </table>
+
+      <h2>LLM 提供商</h2>
+      <table>
+        <tr><th>提供商</th><th>环境变量</th><th>默认模型</th></tr>
+        <tr><td>SiliconFlow</td><td><code class="inline-code">SILICONFLOW_API_KEY</code></td><td>DeepSeek-V3</td></tr>
+        <tr><td>DeepSeek</td><td><code class="inline-code">DEEPSEEK_API_KEY</code></td><td>deepseek-chat</td></tr>
+        <tr><td>OpenAI</td><td><code class="inline-code">OPENAI_API_KEY</code></td><td>gpt-4o-mini</td></tr>
+        <tr><td>Ollama</td><td><code class="inline-code">OLLAMA_BASE_URL</code></td><td>qwen2.5:7b</td></tr>
+      </table>
+    </div>
+
+    <footer>
+      <p>IntentGuard · <a href="https://github.com/lxztry/intentguard" target="_blank">GitHub</a></p>
+    </footer>
+  </div>
+</body>
+</html>
