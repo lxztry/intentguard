@@ -1,0 +1,84 @@
+{
+  "name": "intentguard",
+  "displayName": "IntentGuard",
+  "description": "AI-Era Code Verification Tool - Verify code against natural language requirements",
+  "version": "0.1.0",
+  "publisher": "intentguard",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Linters",
+    "Debuggers"
+  ],
+  "activationEvents": [
+    "onCommand:intentguard.verify",
+    "onCommand:intentguard.verifyFile",
+    "onCommand:intentguard.configure"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "intentguard.verify",
+        "title": "IntentGuard: Verify Current File",
+        "description": "Verify the current file against requirements"
+      },
+      {
+        "command": "intentguard.verifyFile",
+        "title": "IntentGuard: Verify with Requirements File",
+        "description": "Verify a file using a specific requirements file"
+      },
+      {
+        "command": "intentguard.configure",
+        "title": "IntentGuard: Configure",
+        "description": "Configure IntentGuard settings"
+      }
+    ],
+    "configuration": {
+      "title": "IntentGuard",
+      "properties": {
+        "intentguard.requirementsFile": {
+          "type": "string",
+          "default": "requirements.txt",
+          "description": "Default requirements file to use for verification"
+        },
+        "intentguard.llmProvider": {
+          "type": "string",
+          "default": "siliconflow",
+          "description": "LLM provider to use (siliconflow, deepseek, openai)",
+          "enum": ["siliconflow", "deepseek", "openai"]
+        },
+        "intentguard.verificationLevel": {
+          "type": "string",
+          "default": "semantic",
+          "description": "Verification level (static, semantic, deep)",
+          "enum": ["static", "semantic", "deep"]
+        },
+        "intentguard.outputFormat": {
+          "type": "string",
+          "default": "text",
+          "description": "Output format (text, json, markdown)",
+          "enum": ["text", "json", "markdown"]
+        }
+      }
+    },
+    "keybindings": [
+      {
+        "command": "intentguard.verify",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v",
+        "when": "editorTextFocus",
+        "description": "Verify current file with IntentGuard"
+      }
+    ]
+  },
+  "scripts": {
+    "test": "node test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^18.0.0"
+  }
+}
