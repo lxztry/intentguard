@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLI 参考 — IntentGuard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0e27; color: #e2e8f0; min-height: 100vh; }
+    .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: 0; }
+    .container { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 0 24px; }
+    header { padding: 28px 0; display: flex; justify-content: space-between; align-items: center; }
+    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+    .logo-icon { width: 42px; height: 42px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 4px 20px rgba(99,102,241,0.4); }
+    .logo-text { font-size: 22px; font-weight: 700; background: linear-gradient(90deg, #a5b4fc, #c4b5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .logo-sub { font-size: 11px; color: #64748b; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+    nav { display: flex; gap: 8px; }
+    nav a { padding: 8px 16px; color: #94a3b8; text-decoration: none; border-radius: 8px; font-size: 14px; transition: all 0.2s; }
+    nav a:hover { color: #e2e8f0; background: rgba(99,102,241,0.15); }
+    nav a.active { color: #a5b4fc; background: rgba(99,102,241,0.2); }
+    .page-title { padding: 48px 0 32px; border-bottom: 1px solid rgba(255,255,255,0.07); margin-bottom: 40px; }
+    .page-title h1 { font-size: 36px; font-weight: 800; margin-bottom: 8px; }
+    .page-title p { color: #64748b; font-size: 16px; }
+    .content { padding-bottom: 80px; }
+    h2 { font-size: 22px; font-weight: 700; margin: 36px 0 16px; color: #a5b4fc; }
+    h3 { font-size: 16px; font-weight: 600; margin: 24px 0 12px; color: #e2e8f0; }
+    p { color: #94a3b8; line-height: 1.8; margin-bottom: 12px; font-size: 15px; }
+    pre { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 20px; margin: 16px 0; overflow-x: auto; font-family: 'Fira Code', monospace; font-size: 13px; line-height: 1.7; }
+    code { font-family: 'Fira Code', monospace; font-size: 13px; }
+    .inline-code { background: rgba(99,102,241,0.15); padding: 2px 8px; border-radius: 4px; color: #a5b4fc; }
+    .cmd-block { background: rgba(0,0,0,0.3); border: 1px solid rgba(99,102,241,0.2); border-radius: 10px; padding: 16px 20px; margin: 20px 0; }
+    .cmd-title { color: #a5b4fc; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+    .cmd-body { color: #34d399; font-family: 'Fira Code', monospace; font-size: 13px; }
+    .flag { color: #fb923c; }
+    .val { color: #60a5fa; }
+    footer { text-align: center; padding: 32px 0; border-top: 1px solid rgba(255,255,255,0.05); color: #475569; font-size: 13px; }
+    footer a { color: #6366f1; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="container">
+    <header>
+      <a href="index.html" class="logo">
+        <div class="logo-icon">🛡️</div>
+        <div><div class="logo-text">IntentGuard</div><div class="logo-sub">代码验证工具</div></div>
+      </a>
+      <nav>
+        <a href="index.html">首页</a>
+        <a href="getting-started.html">快速开始</a>
+        <a href="architecture.html">架构</a>
+        <a href="cli.html" class="active">CLI</a>
+        <a href="https://github.com/lxztry/intentguard" target="_blank">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="page-title">
+      <h1>CLI 参考</h1>
+      <p>完整命令行接口文档</p>
+    </div>
+
+    <div class="content">
+      <h2>verify — 验证代码</h2>
+      <p>核心命令，验证代码是否满足需求约束。</p>
+
+      <div class="cmd-block">
+        <div class="cmd-title">verify</div>
+        <div class="cmd-body">python -m src.cli.main verify <span class="flag">-f</span> <span class="val">path/to/code.py</span> <span class="flag">-r</span> <span class="val">requirements.txt</span></div>
+      </div>
+
+      <h3>必选参数</h3>
+      <table style="width:100%;border-collapse:collapse;margin:12px 0;">
+        <tr><td style="padding:8px 16px;color:#a5b4fc;font-size:13px;width:120px;"><code class="inline-code">-f, --file</code></td><td style="padding:8px 16px;color:#94a3b8;font-size:14px;">待验证的代码文件路径</td></tr>
+        <tr><td style="padding:8px 16px;color:#a5b4fc;font-size:13px;"><code class="inline-code">-r, --requirements</code></td><td style="padding:8px 16px;color:#94a3b8;font-size:14px;">需求文件路径（.txt 或 .md）</td></tr>
+      </table>
+
+      <h3>可选参数</h3>
+      <table style="width:100%;border-collapse:collapse;margin:12px 0;">
+        <tr><td style="padding:8px 16px;color:#a5b4fc;font-size:13px;width:180px;"><code class="inline-code">-c, --code</code></td><td style="padding:8px 16px;color:#94a3b8;font-size:14px;">直接传入代码字符串（跳过文件读取）</td></tr>
+        <tr><td style="padding:8px 16px;color:#a5b4fc;font-size:13px;"><code class="inline-code">--level</code></td><td style="padding:8px 16px;color:#94a3b8;font-size:14px;">验证级别：<span class="inline-code">static</span> | <span class="inline-code">semantic</span> | <span class="inline-code">deep</span>（默认 static）</td></tr>
+        <tr><td style="padding:8px 16px;color:#a5b4fc;font-size:13px;"><code class="inline-code">--format</code></td><td style="padding:8px 16px;color:#94a3b8;font-size:14px;">输出格式：<span class="inline-code">text</span> | <span class="inline-code">json</span> | <span class="inline-code">markdown</span>（默认 text）</td></tr>
+        <tr><td style="padding:8px 16px;color:#a5b4fc;font-size:13px;"><code class="inline-code">--output</code></td><td style="padding:8px 16px;color:#94a3b8;font-size:14px;">输出到文件路径（默认 stdout）</td></tr>
+        <tr><td style="padding:8px 16px;color:#a5b4fc;font-size:13px;"><code class="inline-code">--lang</code></td><td style="padding:8px 16px;color:#94a3b8;font-size:14px;">语言：<span class="inline-code">python</span> | <span class="inline-code">javascript</span> | <span class="inline-code">go</span>（默认 auto 检测）</td></tr>
+        <tr><td style="padding:8px 16px;color:#a5b4fc;font-size:13px;"><code class="inline-code">--llm</code></td><td style="padding:8px 16px;color:#94a3b8;font-size:14px;">强制使用指定 LLM：<span class="inline-code">siliconflow</span> | <span class="inline-code">deepseek</span> | <span class="inline-code">openai</span> | <span class="inline-code">ollama</span></td></tr>
+        <tr><td style="padding:8px 16px;color:#a5b4fc;font-size:13px;"><code class="inline-code">--no-cache</code></td><td style="padding:8px 16px;color:#94a3b8;font-size:14px;">禁用 LLM 响应缓存</td></tr>
+      </table>
+
+      <h2>完整示例</h2>
+      <pre><code># 基本验证
+python -m src.cli.main verify -f app.py -r req.txt
+
+# 指定验证级别 + 输出格式
+python -m src.cli.main verify -f app.py -r req.txt --level semantic --format json --output report.json
+
+# 直接传入代码字符串
+python -m src.cli.main verify -c "def send_sms(): sms_service.send()" -r "必须发送短信通知"
+
+# 强制使用 DeepSeek LLM
+python -m src.cli.main verify -f app.py -r req.txt --llm deepseek --level semantic
+
+# 禁用缓存 + 指定语言
+python -m src.cli.main verify -f app.py -r req.txt --no-cache --lang python</code></pre>
+
+      <h2>parse — 解析需求</h2>
+      <p>仅解析需求文件，查看 IntentGuard 如何理解你的需求（不执行验证）。</p>
+      <div class="cmd-block">
+        <div class="cmd-title">parse</div>
+        <div class="cmd-body">python -m src.cli.main parse <span class="flag">-r</span> <span class="val">requirements.txt</span></div>
+      </div>
+
+      <h2>analyze — 分析代码</h2>
+      <p>仅分析代码结构，不验证需求（查看 AST/函数/调用提取结果）。</p>
+      <div class="cmd-block">
+        <div class="cmd-title">analyze</div>
+        <div class="cmd-body">python -m src.cli.main analyze <span class="flag">-f</span> <span class="val">path/to/code.py</span></div>
+      </div>
+
+      <h2>返回码</h2>
+      <table style="width:100%;border-collapse:collapse;margin:12px 0;">
+        <tr><td style="padding:8px 16px;color:#34d399;font-size:14px;width:80px;">0</td><td style="padding:8px 16px;color:#94a3b8;font-size:14px;">验证通过（所有约束满足）</td></tr>
+        <tr><td style="padding:8px 16px;color:#fb923c;font-size:14px;width:80px;">1</td><td style="padding:8px 16px;color:#94a3b8;font-size:14px;">验证失败（有约束未满足）</td></tr>
+        <tr><td style="padding:8px 16px;color:#f472b6;font-size:14px;width:80px;">2</td><td style="padding:8px 16px;color:#94a3b8;font-size:14px;">错误（文件不存在、解析失败等）</td></tr>
+      </table>
+    </div>
+
+    <footer>
+      <p>IntentGuard · <a href="https://github.com/lxztry/intentguard" target="_blank">GitHub</a></p>
+    </footer>
+  </div>
+</body>
+</html>
